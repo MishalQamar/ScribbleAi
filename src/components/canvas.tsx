@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import {
   ReactSketchCanvas,
   ReactSketchCanvasRef,
@@ -8,11 +8,19 @@ import {
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { Eraser, Pen, Redo2, RotateCcw, Undo2 } from 'lucide-react';
+import { useAppStore } from '@/store/useAppStore';
 
 export const Canvas = () => {
   const canvasRef = useRef<ReactSketchCanvasRef>(null);
   const [strokeColor, setStrokeColor] = useState('#000000');
   const [earseMode, setEraseMode] = useState(false);
+  const { setCanvasRef } = useAppStore();
+
+  // Store canvas ref when component mounts
+  useEffect(() => {
+    setCanvasRef(canvasRef);
+  }, [setCanvasRef]);
+
   const colorInputRef = useRef<HTMLInputElement>(null);
   const handleStrokeColorChange = (
     e: React.ChangeEvent<HTMLInputElement>
