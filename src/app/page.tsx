@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ReactSketchCanvas } from 'react-sketch-canvas';
+import { Canvas } from '@/components/canvas';
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
@@ -16,14 +16,7 @@ export default function Home() {
       </section>
       {/* Sketch Canvas Section */}
       <section className="w-[400px] h-[400px] mx-auto mb-12 mt-6">
-        <div className="w-full aspect-square border-none">
-          <ReactSketchCanvas
-            width="100%"
-            height="100%"
-            strokeWidth={4}
-            strokeColor="#000000"
-          />
-        </div>
+        <Canvas />
       </section>
       {/* Prompt Section */}
       <section className="w-[400px] mx-auto relative">
