@@ -40,17 +40,20 @@ export const Canvas = () => {
   };
 
   return (
-    <div className="mt-6 flex max-w-2xl gap-4">
-      <ReactSketchCanvas
-        width="100%"
-        height="430px"
-        ref={canvasRef}
-        strokeColor={strokeColor}
-        canvasColor="transparent"
-        className="!rounded-2xl border border-blue-300"
-        style={{ cursor: 'crosshair' }}
-      />
+    <div className="mt-6 flex gap-4 mx-auto">
+      {/* Canvas */}
+      <div className="w-[280px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[700px]">
+        <ReactSketchCanvas
+          width="100%"
+          height="400px"
+          ref={canvasRef}
+          strokeColor={strokeColor}
+          canvasColor="transparent"
+          className="!rounded-2xl border border-blue-300 cursor-crosshair"
+        />
+      </div>
 
+      {/* Tools */}
       <div className="flex flex-col gap-y-6 divide-y divide-gray-200">
         <Button
           size="icon"
