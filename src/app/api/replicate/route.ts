@@ -38,7 +38,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract URL from the generated image (output[1])
     const imageUrl = output[1].url();
 
     return NextResponse.json({ output: imageUrl }, { status: 200 });

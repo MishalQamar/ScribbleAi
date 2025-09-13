@@ -6,7 +6,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="max-w-7xl mx-auto py-8 px-4 relative z-10">
-        {/* Header Section */}
         <section className="text-center mb-16">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-800 mb-4">
             LEGO Scribble
@@ -17,10 +16,8 @@ export default function Home() {
           </p>
         </section>
 
-        {/* Main Content Container */}
         <div className="w-[320px] sm:w-[540px] md:w-[640px] lg:w-[740px] xl:w-[740px] mx-auto">
           <div className="flex flex-col gap-8 items-center">
-            {/* Sketch Section */}
             <div className="w-full">
               <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-center">
                 Sketch Your Idea
@@ -28,7 +25,6 @@ export default function Home() {
               <Canvas />
             </div>
 
-            {/* Prompt Section */}
             <div className="w-full">
               <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-center">
                 Describe Your Vision
@@ -36,7 +32,6 @@ export default function Home() {
               <Prompt />
             </div>
 
-            {/* Output Image Section */}
             <div className="w-full">
               <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-center">
                 Your LEGO Creation

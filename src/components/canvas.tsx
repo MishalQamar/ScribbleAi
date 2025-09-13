@@ -10,8 +10,7 @@ import { Stage, Layer, Line } from 'react-konva';
 import Konva from 'konva';
 import { Eraser, Pen, RotateCcw } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
-
-const defaultIconButton = 'bg-white text-slate-700 hover:bg-slate-50';
+import { Button } from '@/components/ui/button';
 
 export const Canvas = () => {
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
@@ -102,16 +101,6 @@ export const Canvas = () => {
   const handlePencilClick = () => setTool('pen');
   const handleEraserClick = () => setTool('eraser');
 
-  const pencilSelected =
-    tool === 'pen'
-      ? 'bg-red-600 text-white hover:bg-red-700'
-      : defaultIconButton;
-
-  const eraserSelected =
-    tool === 'eraser'
-      ? 'bg-red-600 text-white hover:bg-red-700'
-      : defaultIconButton;
-
   return (
     <div className="mt-6 flex gap-4 mx-auto">
       <div className="w-[280px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[700px]">
@@ -163,37 +152,47 @@ export const Canvas = () => {
 
         <hr className="border-slate-200 border rounded-full" />
 
-        <button
+        <Button
           title="Pen"
-          className={`p-3 border border-slate-300 text-slate-700 transition-all duration-200 rounded-lg ${pencilSelected}`}
-          type="button"
+          variant={tool === 'pen' ? 'default' : 'outline'}
+          size="icon"
           aria-label="pencil"
           onClick={handlePencilClick}
+          className={
+            tool === 'pen'
+              ? 'bg-red-600 hover:bg-red-700 text-white'
+              : ''
+          }
         >
           <Pen size={18} />
-        </button>
+        </Button>
 
-        <button
+        <Button
           title="Eraser"
-          className={`p-3 border border-slate-300 text-slate-700 transition-all duration-200 rounded-lg ${eraserSelected}`}
-          type="button"
+          variant={tool === 'eraser' ? 'default' : 'outline'}
+          size="icon"
           aria-label="eraser"
           onClick={handleEraserClick}
+          className={
+            tool === 'eraser'
+              ? 'bg-red-600 hover:bg-red-700 text-white'
+              : ''
+          }
         >
           <Eraser size={18} />
-        </button>
+        </Button>
 
         <hr className="border-slate-200 border rounded-full" />
 
-        <button
+        <Button
           title="Clear Canvas"
-          className={`p-3 border border-slate-300 text-slate-700 transition-all duration-200 rounded-lg ${defaultIconButton}`}
-          type="button"
+          variant="outline"
+          size="icon"
           aria-label="clear"
           onClick={handleResetClick}
         >
           <RotateCcw size={18} />
-        </button>
+        </Button>
       </div>
     </div>
   );

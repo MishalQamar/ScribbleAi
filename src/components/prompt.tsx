@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { Button } from '@/components/ui/button';
 
 export const Prompt = () => {
   const [prompt, setPrompt] = useState('');
@@ -83,7 +84,26 @@ export const Prompt = () => {
 
   return (
     <div className="w-[280px] ml-[-6px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[700px] mx-auto">
-      <div className="flex items-center border border-slate-300 overflow-hidden rounded-xl bg-white">
+      <div className="flex flex-col gap-3 sm:hidden">
+        <input
+          type="text"
+          name="prompt"
+          className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none text-slate-900 bg-transparent text-lg font-medium placeholder-slate-500"
+          placeholder="What to build?"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+        <Button
+          onClick={handleGenerate}
+          disabled={isLoading}
+          variant="default"
+          className="w-full bg-red-600 hover:bg-red-700 px-6 py-3 text-lg font-medium rounded-xl"
+        >
+          {isLoading ? 'Building...' : 'Generate'}
+        </Button>
+      </div>
+
+      <div className="hidden sm:flex border border-slate-300 overflow-hidden rounded-xl bg-white h-12">
         <input
           type="text"
           name="prompt"
@@ -92,17 +112,14 @@ export const Prompt = () => {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
         />
-        <button
+        <Button
           onClick={handleGenerate}
           disabled={isLoading}
-          className={`py-3 px-6 text-white font-semibold text-lg text-center transition-all duration-200 flex items-center justify-center gap-2 min-w-[120px] focus:outline-none rounded-r-xl ${
-            isLoading
-              ? 'bg-slate-400 cursor-not-allowed'
-              : 'bg-red-600 hover:bg-red-700 cursor-pointer'
-          }`}
+          variant="default"
+          className="rounded-r-xl rounded-l-none min-w-[120px] bg-red-600 hover:bg-red-700 px-6 text-lg font-medium h-full"
         >
           {isLoading ? 'Building...' : 'Generate'}
-        </button>
+        </Button>
       </div>
       {error && (
         <div className="mt-4 px-4">
