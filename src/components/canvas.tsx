@@ -1,133 +1,199 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import {
-  ReactSketchCanvas,
-  ReactSketchCanvasRef,
-} from 'react-sketch-canvas';
-import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
-import { Eraser, Pen, Redo2, RotateCcw, Undo2 } from 'lucide-react';
+import React, {
+  type ChangeEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { Stage, Layer, Line } from 'react-konva';
+import Konva from 'konva';
+import { Eraser, Pen, RotateCcw } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 
+const defaultIconButton = 'bg-white text-slate-700 hover:bg-slate-50';
+
 export const Canvas = () => {
-  const canvasRef = useRef<ReactSketchCanvasRef>(null);
-  const [strokeColor, setStrokeColor] = useState('#000000');
-  const [earseMode, setEraseMode] = useState(false);
+  const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
+  const [strokeColor, setStrokeColor] = useState('#6497eb');
+  const [lines, setLines] = useState<
+    { tool: 'pen' | 'eraser'; color: string; points: number[] }[]
+  >([]);
+  const [canvasSize, setCanvasSize] = useState({
+    width: 280,
+    height: 200,
+  });
+  const [resetKey, setResetKey] = useState(0);
+  const isDrawing = useRef(false);
+
+  const stageRef = useRef<Konva.Stage>(null);
   const { setCanvasRef } = useAppStore();
 
-  // Store canvas ref when component mounts
+  const getCanvasDimensions = () => {
+    if (typeof window === 'undefined')
+      return { width: 280, height: 200 };
+
+    const width = window.innerWidth;
+    if (width >= 1280) return { width: 700, height: 400 };
+    if (width >= 1024) return { width: 700, height: 400 };
+    if (width >= 768) return { width: 600, height: 350 };
+    if (width >= 640) return { width: 500, height: 300 };
+    return { width: 280, height: 200 };
+  };
+
   useEffect(() => {
-    setCanvasRef(canvasRef);
+    const updateCanvasSize = () => {
+      setCanvasSize(getCanvasDimensions());
+    };
+
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
+    return () =>
+      window.removeEventListener('resize', updateCanvasSize);
+  }, []);
+
+  useEffect(() => {
+    setCanvasRef(stageRef);
   }, [setCanvasRef]);
 
-  const colorInputRef = useRef<HTMLInputElement>(null);
-  const handleStrokeColorChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setStrokeColor(e.target.value);
+  const handleMouseDown = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    isDrawing.current = true;
+    const stage = e.target.getStage();
+    if (!stage) return;
+    const pos = stage.getPointerPosition();
+    if (!pos) return;
+    setLines((prev) => [
+      ...prev,
+      { tool, color: strokeColor, points: [pos.x, pos.y] },
+    ]);
   };
 
-  const handleEraserClick = () => {
-    setEraseMode(true);
-    canvasRef.current?.eraseMode(true);
+  const handleMouseMove = (e: Konva.KonvaEventObject<MouseEvent>) => {
+    if (!isDrawing.current) return;
+    const stage = e.target.getStage();
+    if (!stage) return;
+    const point = stage.getPointerPosition();
+    if (!point) return;
+    setLines((prev) => {
+      const lastLine = prev[prev.length - 1];
+      const updatedLine = {
+        ...lastLine,
+        points: lastLine.points.concat([point.x, point.y]),
+      };
+      return [...prev.slice(0, -1), updatedLine];
+    });
   };
 
-  const handlePenClick = () => {
-    setEraseMode(false);
-    canvasRef.current?.eraseMode(false);
+  const handleMouseUp = () => {
+    isDrawing.current = false;
   };
-  const handleUndoClick = () => {
-    canvasRef.current?.undo();
+
+  const handleResetClick = () => {
+    setLines([]);
+    isDrawing.current = false;
+    setResetKey((prev) => prev + 1);
   };
-  const handleRedoClick = () => {
-    canvasRef.current?.redo();
+
+  const onColorChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setStrokeColor(event.target.value);
   };
-  const handleClearClick = () => {
-    canvasRef.current?.clearCanvas();
-  };
+
+  const handlePencilClick = () => setTool('pen');
+  const handleEraserClick = () => setTool('eraser');
+
+  const pencilSelected =
+    tool === 'pen'
+      ? 'bg-red-600 text-white hover:bg-red-700'
+      : defaultIconButton;
+
+  const eraserSelected =
+    tool === 'eraser'
+      ? 'bg-red-600 text-white hover:bg-red-700'
+      : defaultIconButton;
 
   return (
     <div className="mt-6 flex gap-4 mx-auto">
-      {/* Canvas */}
       <div className="w-[280px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[700px]">
-        <ReactSketchCanvas
-          width="100%"
-          height="400px"
-          ref={canvasRef}
-          strokeColor={strokeColor}
-          canvasColor="transparent"
-          className="!rounded-2xl border border-blue-300 cursor-crosshair"
-        />
+        <Stage
+          key={resetKey}
+          ref={stageRef}
+          width={canvasSize.width}
+          height={canvasSize.height}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onMouseup={handleMouseUp}
+          style={{
+            border: '2px solid #e2e8f0',
+            borderRadius: '12px',
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <Layer>
+            {lines.map((line, i) => (
+              <Line
+                key={i}
+                points={line.points}
+                stroke={line.tool === 'eraser' ? '#fff' : line.color}
+                strokeWidth={line.tool === 'eraser' ? 20 : 3}
+                tension={0.5}
+                lineCap="round"
+                lineJoin="round"
+                globalCompositeOperation={
+                  line.tool === 'eraser'
+                    ? 'destination-out'
+                    : 'source-over'
+                }
+              />
+            ))}
+          </Layer>
+        </Stage>
       </div>
 
-      {/* Tools */}
-      <div className="flex flex-col gap-y-6 divide-y divide-gray-200">
-        <Button
-          size="icon"
-          type="button"
-          onClick={() => colorInputRef.current?.click()}
-          className={cn(
-            'border border-gray-300',
-            !strokeColor && 'border border-gray-300'
-          )}
-          style={{ backgroundColor: strokeColor }}
-        >
+      <div className="flex flex-col w-10 gap-2">
+        <div className="w-auto h-9 rounded-full overflow-hidden">
           <input
+            title="Color"
+            className="w-[200%] h-[200%] bg-transparent border-none cursor-pointer appearance-none transform-cpu -translate-x-1/4 -translate-y-1/4"
             type="color"
-            className="sr-only"
-            ref={colorInputRef}
             value={strokeColor}
-            onChange={handleStrokeColorChange}
+            onChange={onColorChange}
           />
-        </Button>
+        </div>
 
-        <div className="flex flex-col gap-3 pt-6">
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            disabled={!earseMode}
-            onClick={handlePenClick}
-          >
-            <Pen size={16} />
-          </Button>
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            disabled={earseMode}
-            onClick={handleEraserClick}
-          >
-            <Eraser size={16} />
-          </Button>
-        </div>
-        <div className="flex flex-col gap-3 pt-6">
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            onClick={handleUndoClick}
-          >
-            <Undo2 size={16} />
-          </Button>
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            onClick={handleRedoClick}
-          >
-            <Redo2 size={16} />
-          </Button>
-          <Button
-            size="icon"
-            type="button"
-            variant="outline"
-            onClick={handleClearClick}
-          >
-            <RotateCcw size={16} />
-          </Button>
-        </div>
+        <hr className="border-slate-200 border rounded-full" />
+
+        <button
+          title="Pen"
+          className={`p-3 border border-slate-300 text-slate-700 transition-all duration-200 rounded-lg ${pencilSelected}`}
+          type="button"
+          aria-label="pencil"
+          onClick={handlePencilClick}
+        >
+          <Pen size={18} />
+        </button>
+
+        <button
+          title="Eraser"
+          className={`p-3 border border-slate-300 text-slate-700 transition-all duration-200 rounded-lg ${eraserSelected}`}
+          type="button"
+          aria-label="eraser"
+          onClick={handleEraserClick}
+        >
+          <Eraser size={18} />
+        </button>
+
+        <hr className="border-slate-200 border rounded-full" />
+
+        <button
+          title="Clear Canvas"
+          className={`p-3 border border-slate-300 text-slate-700 transition-all duration-200 rounded-lg ${defaultIconButton}`}
+          type="button"
+          aria-label="clear"
+          onClick={handleResetClick}
+        >
+          <RotateCcw size={18} />
+        </button>
       </div>
     </div>
   );
