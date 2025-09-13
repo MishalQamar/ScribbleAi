@@ -1,13 +1,13 @@
 import Replicate from 'replicate';
 
-interface GenerateImageRequest {
+type GenerateImageRequest = {
   image: string;
   prompt: string;
-}
+};
 
-interface GenerateImageResponse {
+type GenerateImageResponse = {
   imageUrl: string;
-}
+};
 
 const buildInput = (request: GenerateImageRequest) => {
   return {
@@ -16,7 +16,7 @@ const buildInput = (request: GenerateImageRequest) => {
     a_prompt:
       'LEGO brick style, made of colorful LEGO blocks, LEGO construction, blocky LEGO aesthetic, best quality, extremely detailed, bright LEGO colors, LEGO minifigure style',
     n_prompt:
-      'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, realistic, photorealistic, smooth surfaces, organic shapes',
+      'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, realistic, photorealistic, smooth surfaces, organic shapes brick ',
   };
 };
 

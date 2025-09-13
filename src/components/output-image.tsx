@@ -2,6 +2,10 @@
 
 import { useAppStore } from '@/store/useAppStore';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import LegoLoader from './lego-loader';
 
 export const OutputImage = () => {
   const { outputImage, isLoading } = useAppStore();
@@ -10,12 +14,10 @@ export const OutputImage = () => {
     return (
       <div className="h-[280px] sm:h-[400px] flex items-center justify-center bg-slate-50 border border-slate-200 rounded-xl">
         <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <div className="w-12 h-12 border-2 border-slate-300 border-t-red-600 animate-spin rounded-full"></div>
-          </div>
+          <LegoLoader />
           <div className="text-center">
             <p className="text-slate-700 font-medium text-lg">
-              Generating your LEGO creation...
+              Building your LEGO creation...
             </p>
             <p className="text-slate-500 text-sm mt-1">
               This may take a few moments
@@ -64,11 +66,29 @@ export const OutputImage = () => {
         alt="Generated AI image"
         width={500}
         height={400}
-        className="object-cover w-full h-full transition-all duration-300 ease-in-out hover:scale-105 rounded-xl"
+        className="object-cover w-full h-full transition-all duration-300 ease-in-out  rounded-xl"
         priority
       />
-      <div className="absolute top-3 right-3 bg-red-600 text-white px-3 py-1 text-sm font-medium rounded-lg">
-        Generated
+      <div className="absolute top-3 right-3 flex gap-2">
+        {outputImage && (
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="bg-white/95 hover:bg-white border-slate-300 shadow-sm hover:shadow-md transition-all duration-200"
+          >
+            <Link
+              href={outputImage}
+              download={`lego-creation-${Date.now()}.png`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5"
+            >
+              <Download size={14} />
+              <span className="text-xs font-medium">Download</span>
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );

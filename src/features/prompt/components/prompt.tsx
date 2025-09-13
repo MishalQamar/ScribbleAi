@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useAppStore } from '@/store/useAppStore';
 import { Button } from '@/components/ui/button';
+import { useAppStore } from '@/store/useAppStore';
+
+import { useState } from 'react';
 
 export const Prompt = () => {
   const [prompt, setPrompt] = useState('');
@@ -26,6 +27,9 @@ export const Prompt = () => {
       mimeType: 'image/png',
       pixelRatio: 2,
     });
+
+    console.log('Canvas base64 length:', base64.length);
+    console.log('Base64 preview:', base64.substring(0, 100));
 
     if (!base64 || base64.length < 100) {
       setError('Please draw something on the canvas');
