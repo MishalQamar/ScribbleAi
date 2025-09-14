@@ -19,21 +19,21 @@ export default function Home() {
         <div className="w-[320px] sm:w-[540px] md:w-[640px] lg:w-[740px] xl:w-[740px] mx-auto">
           <div className="flex flex-col gap-8 items-center">
             <div className="w-full">
-              <h2 className=" ml-[-6px] text-2xl font-semibold text-slate-700 mb-6 text-center">
+              <h2 className="  text-2xl font-semibold text-slate-700 mb-6 text-left">
                 Sketch Your Idea
               </h2>
               <Canvas />
             </div>
 
             <div className="w-full">
-              <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-center ml-[-6px]">
+              <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-left">
                 Describe Your Vision
               </h2>
               <Prompt />
             </div>
 
             <div className="w-full">
-              <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-center ml-[-6px]">
+              <h2 className="text-2xl font-semibold text-slate-700 mb-6 text-left">
                 Your LEGO Creation
               </h2>
               <div className="w-[280px] ml-[-6px] sm:w-[500px] md:w-[600px] lg:w-[700px] xl:w-[700px] mx-auto">
