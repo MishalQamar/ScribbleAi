@@ -88,6 +88,43 @@ export const Canvas = () => {
     isDrawing.current = false;
   };
 
+  const handleTouchStart = (
+    e: Konva.KonvaEventObject<TouchEvent>
+  ) => {
+    e.evt.preventDefault(); // Prevent default touch behavior
+    isDrawing.current = true;
+    const stage = e.target.getStage();
+    if (!stage) return;
+    const pos = stage.getPointerPosition();
+    if (!pos) return;
+    setLines((prev) => [
+      ...prev,
+      { tool, color: strokeColor, points: [pos.x, pos.y] },
+    ]);
+  };
+
+  const handleTouchMove = (e: Konva.KonvaEventObject<TouchEvent>) => {
+    e.evt.preventDefault(); // Prevent scrolling while drawing
+    if (!isDrawing.current) return;
+    const stage = e.target.getStage();
+    if (!stage) return;
+    const point = stage.getPointerPosition();
+    if (!point) return;
+    setLines((prev) => {
+      const lastLine = prev[prev.length - 1];
+      const updatedLine = {
+        ...lastLine,
+        points: lastLine.points.concat([point.x, point.y]),
+      };
+      return [...prev.slice(0, -1), updatedLine];
+    });
+  };
+
+  const handleTouchEnd = (e: Konva.KonvaEventObject<TouchEvent>) => {
+    e.evt.preventDefault();
+    isDrawing.current = false;
+  };
+
   const handleResetClick = () => {
     setLines([]);
     isDrawing.current = false;
@@ -112,10 +149,14 @@ export const Canvas = () => {
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           style={{
             border: '2px solid #e2e8f0',
             borderRadius: '12px',
             backgroundColor: '#ffffff',
+            touchAction: 'none', // Prevent default touch behaviors
           }}
         >
           <Layer>
